@@ -1,103 +1,149 @@
+"use client";
+import { useState } from "react";
+import { useCart } from "./context/cartcontext";
 import Image from "next/image";
+import { Search } from "lucide-react"; 
+import { useRouter } from "next/navigation";
+import { products } from "./data/products";
+
+const categories = [
+  { name: "Electronics", img: "/images/electronics.jpg" },
+  { name: "Appliances", img: "/images/appliances.jpg" },
+  { name: "Fashion", img: "/images/fashion.jpg" },
+  { name: "Kitchen", img: "/images/kitchen.jpg" },
+  { name: "Beauty", img: "/images/beauty.jpg" },
+  { name: "Groceries", img: "/images/groceries.jpg" },
+  { name: "Stationery", img: "/images/stationery.jpg" },
+  { name: "Toys", img: "/images/toys.jpg" },
+  { name: "Books", img: "/images/books.jpg" },
+];
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { addToCart } = useCart();
+  const [search, setSearch] = useState("");
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="px-4 max-w-7xl mx-auto">
+      {/* Sticky Search Bar */}
+      <div className="sticky top-16 z-20 py-3 mb-4 ">
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Search for amazing products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 bg-gray-50 py-3 w-full rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm text-sm sm:text-base pr-12"
+          />
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800">
+          🛍️ShopVerce Catalog
+        </h1>
+      </div>
+
+      {/* Categories Section */}
+      <div className="overflow-x-auto scrollbar-hide mb-8">
+        <div className="flex gap-10">
+          {categories.map((cat) => (
+            <div
+              key={cat.name}
+              className="flex-shrink-0 cursor-pointer flex flex-col items-center"
+              onClick={() => router.push(`/categories/${cat.name.toLowerCase()}`)}
+            >
+              {/* Circle Image */}
+              <div className="w-20 h-20 relative rounded-full overflow-hidden shadow-md hover:shadow-xl transition mb-2">
+                <Image src={cat.img} alt={cat.name} fill className="object-cover" />
+              </div>
+              <span className="text-sm font-semibold text-gray-700">{cat.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Product Grid */}
+      {filteredProducts.length === 0 ? (
+        <p className="text-gray-500 text-center text-lg">No products found ❌</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-center">
+          {filteredProducts.map((p) => (
+            <div
+              key={p.id}
+              className="relative bg-white rounded-2xl shadow-md hover:shadow-2xl transform hover:scale-105 transition duration-300 w-full sm:w-72 lg:w-80 mx-auto flex flex-col border-t-4 border-blue-500"
+            >
+              {/* Offer & Bestseller Badges */}
+              <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+                {p.offer && p.offer > 0 && (
+                  <span className="bg-yellow-400 text-black text-[10px] px-2 py-0.5 rounded-full font-bold">
+                    {p.offer}% OFF
+                  </span>
+                )}
+                {p.bestseller && (
+                  <span className="bg-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                    Best Seller
+                  </span>
+                )}
+              </div>
+
+              {/* Product Image */}
+              <div className="flex justify-center items-center h-40 sm:h-44 lg:h-48 bg-gray-50 rounded-t-2xl">
+                <Image
+                  src={p.image}
+                  alt={p.name}
+                  width={150}
+                  height={150}
+                  className="object-contain"
+                />
+              </div>
+
+              {/* Product Info */}
+              <div className="p-3 sm:p-4 flex flex-col flex-1">
+                <h2 className="font-bold text-base sm:text-lg text-gray-800 mb-1">
+                  {p.name}
+                </h2>
+                <p className="text-gray-500 text-xs sm:text-sm mb-2">
+                  {p.description}
+                </p>
+
+                {/* Price + Offer */}
+                <div className="flex items-center gap-2 mb-2">
+                  {p.offer && p.offer > 0 ? (
+                    <>
+                      <p className="text-gray-400 line-through text-sm">₹{p.price}</p>
+                      <p className="text-green-600 font-bold text-sm">
+                        ₹{Math.round(p.price - (p.price * p.offer) / 100)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-gray-800 font-bold text-sm">₹{p.price}</p>
+                  )}
+                </div>
+
+                {/* Rating */}
+                <p className="text-yellow-500 text-xs sm:text-sm mb-3">
+                  {"⭐".repeat(Math.floor(p.rating))} ({p.rating})
+                </p>
+
+                {/* Add to Cart */}
+                <button
+                  onClick={() => addToCart(p)}
+                  className="mt-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 sm:px-4 py-2 rounded-full hover:from-purple-700 hover:to-blue-700 transition text-sm sm:text-base"
+                >
+                  Add to Cart🛒
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
