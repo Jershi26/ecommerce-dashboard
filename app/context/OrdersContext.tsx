@@ -22,7 +22,7 @@ export interface Order {
   delivery: number;
   discount: number;
   date: string;
-  status: OrderStatus; // New field for tracking
+  status?: OrderStatus; // New field for tracking
 }
 
 interface OrdersContextType {
