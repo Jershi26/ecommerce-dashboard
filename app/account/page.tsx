@@ -7,7 +7,7 @@ import { LogOut, MapPin, ShoppingBag, User } from "lucide-react";
 export default function AccountPage() {
   const { clearCart } = useCart();
   const { orders, clearOrders } = useOrders();
-  const [viewDetails, setViewDetails] = useState<{ [key: number]: boolean }>({});
+  const [viewDetails, setViewDetails] = useState<{ [key: string]: boolean }>({});
 
   const user = {
     name: "Jershii",
@@ -28,9 +28,10 @@ export default function AccountPage() {
     alert("Logged out successfully!");
   };
 
-  const toggleDetails = (id: number) => {
-    setViewDetails({ ...viewDetails, [id]: !viewDetails[id] });
-  };
+ const toggleDetails = (id: string) => {
+  setViewDetails((prev) => ({ ...prev, [id]: !prev[id] }));
+};
+
 
   return (
     <div className="max-w-5xl mx-auto min-h-screen ">
