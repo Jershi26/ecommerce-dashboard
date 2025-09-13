@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 import { useOrders, Address as OrderAddress } from "./OrdersContext";
 
 export interface CartItem {
@@ -36,7 +36,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const { addOrder } = useOrders();
 
-  // ✅ Updated addToCart to support increasing/decreasing quantity
+  // ✅ Add / update cart
   const addToCart = (item: CartItem, qtyChange: number = 1) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
@@ -58,28 +58,38 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => setCart([]);
 
-  const placeOrder = (address: Address) => {
+  // ✅ Place order
+  const placeOrder = (address: OrderAddress) => {
     if (cart.length === 0) return;
+
+    const total = cart.reduce(
+      (sum, i) =>
+        sum +
+        (i.price - (i.offer ? (i.price * i.offer) / 100 : 0)) * (i.qty || 1),
+      0
+    );
+
     const order = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       items: cart,
       address,
-      total: cart.reduce((sum, i) => sum + (i.price * (i.qty || 1)), 0),
+      total,
       delivery: 50,
       discount: 0,
       date: new Date().toISOString(),
+      status: "Processing" as const, // ✅ always included
     };
+
     addOrder(order);
     setCart([]);
   };
 
-  return (
-    <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, placeOrder, setCart }}
-    >
-      {children}
-    </CartContext.Provider>
+  const value = useMemo(
+    () => ({ cart, addToCart, removeFromCart, clearCart, placeOrder, setCart }),
+    [cart]
   );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
 export const useCart = () => {

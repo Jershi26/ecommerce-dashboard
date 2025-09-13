@@ -1,6 +1,6 @@
 "use client";
 import { createContext, ReactNode, useContext, useState } from "react";
-import { CartItem } from "./cartcontext"; // Ensure CartItem is exported from cartcontext
+import { CartItem } from "./cartcontext"; // ensure correct path
 
 export interface Address {
   name: string;
@@ -15,14 +15,14 @@ export interface Address {
 export type OrderStatus = "Processing" | "Shipped" | "Out for Delivery" | "Delivered";
 
 export interface Order {
-  id: number;
+  id: string; // use UUID instead of number for uniqueness
   items: CartItem[];
   address: Address;
   total: number;
   delivery: number;
   discount: number;
   date: string;
-  status?: OrderStatus; // New field for tracking
+  status: OrderStatus; // ✅ always required
 }
 
 interface OrdersContextType {
@@ -37,8 +37,8 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   const addOrder = (order: Order) => {
-    // Default new order status: Processing
-    setOrders((prev) => [...prev, { ...order, status: "Processing" }]);
+    // Ensure status defaults to "Processing"
+    setOrders((prev) => [...prev, { ...order, status: order.status ?? "Processing" }]);
   };
 
   const clearOrders = () => setOrders([]);
@@ -50,10 +50,8 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Custom hook to use OrdersContext
 export const useOrders = () => {
   const context = useContext(OrdersContext);
-  if (!context)
-    throw new Error("useOrders must be used within an OrdersProvider");
+  if (!context) throw new Error("useOrders must be used within an OrdersProvider");
   return context;
 };
